@@ -1,45 +1,43 @@
-# SePay Bank Hub API for Laravel
+# SePay Bank Hub API cho Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sepayvn/laravel-sepay-bankhub.svg?style=flat-square)](https://packagist.org/packages/sepayvn/laravel-sepay-bankhub)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/sepayvn/laravel-sepay-bankhub/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sepayvn/laravel-sepay-bankhub/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/sepayvn/laravel-sepay-bankhub/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/sepayvn/laravel-sepay-bankhub/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/sepayvn/laravel-sepay-bankhub.svg?style=flat-square)](https://packagist.org/packages/sepayvn/laravel-sepay-bankhub)
 
-## Installation
+## Cài đặt
 
-You can install the package via composer:
+Bạn có thể cài đặt package thông qua composer:
 
 ```bash
 composer require sepayvn/laravel-sepay-bankhub
 ```
 
-You can publish the config file with:
+Bạn có thể publish file config với lệnh:
 
 ```bash
 php artisan vendor:publish --tag="laravel-sepay-bankhub-config"
 ```
 
-This is the contents of the published config file:
+Đây là nội dung của file config đã được publish:
 
 ```php
 return [
+    'api_key' => env('SEPAY_BANKHUB_API_KEY'),
+    'api_secret' => env('SEPAY_BANKHUB_API_SECRET'),
+    'api_url' => env('SEPAY_BANKHUB_API_URL', 'https://partner-api.sepay.vn/merchant/v1'),
 ];
+
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-sepay-bankhub-views"
-```
-
-## Usage
+## Sử dụng
 
 ```php
-$sePayBankhub = new SePay\SePayBankhub();
-echo $sePayBankhub->echoPhrase('Hello, SePay!');
+$sePayBankhubService = new SePay\SePayBankhub\Services\SePayBankhubService();
+$sePayBankhubService->getBanks();
 ```
 
-## Testing
+## Kiểm thử
 
 ```bash
 composer test
@@ -47,21 +45,21 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Vui lòng xem [CHANGELOG](CHANGELOG.md) để biết thêm thông tin về những thay đổi gần đây.
 
-## Contributing
+## Đóng góp
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Vui lòng xem [CONTRIBUTING](CONTRIBUTING.md) để biết chi tiết.
 
-## Security Vulnerabilities
+## Lỗ hổng bảo mật
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Vui lòng xem [chính sách bảo mật](../../security/policy) của chúng tôi để biết cách báo cáo lỗ hổng bảo mật.
 
 ## Credits
 
 -   [SePay](https://github.com/sepayvn)
--   [All Contributors](../../contributors)
+-   [Tất cả các Contributors](../../contributors)
 
-## License
+## Giấy phép
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Vui lòng xem [File Giấy phép](LICENSE.md) để biết thêm thông tin.
