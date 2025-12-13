@@ -60,7 +60,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting access token', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;
@@ -102,7 +101,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting banks', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return [];
@@ -120,7 +118,7 @@ final class SePayBankhubService
     /**
      * Tạo công ty mới trên Sepay
      *
-     * @return array<string, mixed>|null Trả về dữ liệu công ty đã tạo hoặc null nếu thất bại
+     * @return array{code: int, message: string, id: string}|null Trả về dữ liệu công ty đã tạo hoặc null nếu thất bại
      */
     public function createCompany(string $fullName, string $shortName): ?array
     {
@@ -135,7 +133,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/company/create', [
+                ->post('/company/create', [
                     'full_name' => $fullName,
                     'short_name' => $shortName,
                 ]);
@@ -151,11 +149,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            return $response->json('data');
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while creating company', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'full_name' => $fullName,
                 'short_name' => $shortName,
             ]);
@@ -167,14 +164,14 @@ final class SePayBankhubService
     /**
      * Chỉnh sửa thông tin công ty trên Sepay
      *
-     * @param  string  $companyId  ID của công ty cần chỉnh sửa
+     * @param  string|int  $companyId  ID của công ty cần chỉnh sửa
      * @param  string  $fullName  Tên đầy đủ công ty
      * @param  string  $shortName  Tên viết tắt công ty
      * @param  string  $status  Trạng thái công ty (Pending, Active, Suspended, Terminated, Cancelled, Fraud)
-     * @return array<string, mixed>|null Trả về dữ liệu công ty đã cập nhật hoặc null nếu thất bại
+     * @return array{code: int, message: string}|null Trả về dữ liệu công ty đã cập nhật hoặc null nếu thất bại
      */
     public function editCompany(
-        string $companyId,
+        string|int $companyId,
         string $fullName,
         string $shortName,
         string $status
@@ -190,7 +187,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/company/edit/{$companyId}", [
+                ->post("/company/edit/{$companyId}", [
                     'full_name' => $fullName,
                     'short_name' => $shortName,
                     'status' => $status,
@@ -209,11 +206,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            return $response->json('data');
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while editing company', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'full_name' => $fullName,
                 'short_name' => $shortName,
@@ -247,7 +243,7 @@ final class SePayBankhubService
                 $client = $client->withQueryParameters(['date' => $date]);
             }
 
-            $response = $client->get('/merchant/v1/merchant/counter');
+            $response = $client->get('/merchant/counter');
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get merchant counter', [
@@ -263,7 +259,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting merchant counter', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'date' => $date,
             ]);
 
@@ -316,7 +311,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withQueryParameters($params)
-                ->get('/merchant/v1/company');
+                ->get('/company');
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to list companies', [
@@ -328,13 +323,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while listing companies', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;
@@ -359,7 +351,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->get("/merchant/v1/company/details/{$companyId}");
+                ->get("/company/details/{$companyId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get company details', [
@@ -375,7 +367,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting company details', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
             ]);
 
@@ -401,7 +392,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->get("/merchant/v1/company/configuration/{$companyId}");
+                ->get("/company/configuration/{$companyId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get company configuration', [
@@ -417,7 +408,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting company configuration', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
             ]);
 
@@ -428,10 +418,11 @@ final class SePayBankhubService
     /**
      * Cập nhật cấu hình công ty (tổ chức)
      *
-     * @param  array<string, mixed>  $config  Cấu hình cần cập nhật
-     * @return array<string, mixed>|null
+     * @param  string|int  $companyId  ID công ty
+     * @param  array{payment_code?: string, payment_code_prefix?: string, payment_code_suffix_from?: int, payment_code_suffix_to?: int, payment_code_suffix_character_type?: string, transaction_amount?: int|string}  $config  Cấu hình cần cập nhật
+     * @return array{code: int, message: string}|null
      */
-    public function updateCompanyConfiguration(string $companyId, array $config): ?array
+    public function updateCompanyConfiguration(string|int $companyId, array $config): ?array
     {
         $accessToken = $this->getAccessToken();
 
@@ -444,7 +435,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/company/configuration/{$companyId}", $config);
+                ->post("/company/configuration/{$companyId}", $config);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to update company configuration', [
@@ -457,13 +448,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while updating company configuration', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'config' => $config,
             ]);
@@ -495,7 +483,7 @@ final class SePayBankhubService
                 $client = $client->withQueryParameters(['date' => $date]);
             }
 
-            $response = $client->get("/merchant/v1/company/counter/{$companyId}");
+            $response = $client->get("/company/counter/{$companyId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get company counter', [
@@ -512,7 +500,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting company counter', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'date' => $date,
             ]);
@@ -566,7 +553,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withQueryParameters($params)
-                ->get('/merchant/v1/bankAccount');
+                ->get('/bankAccount');
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to list bank accounts', [
@@ -578,13 +565,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while listing bank accounts', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;
@@ -609,7 +593,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->get("/merchant/v1/bankAccount/details/{$bankAccountId}");
+                ->get("/bankAccount/details/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get bank account details', [
@@ -625,7 +609,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting bank account details', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -714,7 +697,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withQueryParameters($params)
-                ->get('/merchant/v1/transaction');
+                ->get('/transaction');
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to list transactions', [
@@ -726,13 +709,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while listing transactions', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;
@@ -757,7 +737,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->get("/merchant/v1/transaction/details/{$transactionId}");
+                ->get("/transaction/details/{$transactionId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get transaction details', [
@@ -773,7 +753,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting transaction details', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'transaction_id' => $transactionId,
             ]);
 
@@ -784,7 +763,13 @@ final class SePayBankhubService
     /**
      * Tạo tài khoản ngân hàng OCB cho cá nhân
      *
-     * @return array<string, mixed>|null Trả về dữ liệu tài khoản đã tạo hoặc null nếu thất bại
+     * @param  string  $companyId  ID công ty
+     * @param  string  $accountHolderName  Tên chủ tài khoản
+     * @param  string  $accountNumber  Số tài khoản
+     * @param  string  $identificationNumber  Số CMND/CCCD
+     * @param  string  $phoneNumber  Số điện thoại
+     * @param  string  $label  Tên gợi nhớ
+     * @return array{code: 2011, message: string, id: string, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về dữ liệu tài khoản đã tạo hoặc null nếu thất bại
      */
     public function createOcbIndividualBankAccount(
         string $companyId,
@@ -805,7 +790,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/ocb/individual/bankAccount/create', [
+                ->post('/ocb/individual/bankAccount/create', [
                     'company_id' => $companyId,
                     'account_holder_name' => $accountHolderName,
                     'account_number' => $accountNumber,
@@ -825,11 +810,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            return $response->json('data');
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while creating OCB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'account_number' => $accountNumber,
             ]);
@@ -841,7 +825,12 @@ final class SePayBankhubService
     /**
      * Thêm tài khoản liên kết ngân hàng ACB dành cho cá nhân
      *
-     * @return array<string, mixed>|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
+     * @param  string  $companyId  ID công ty
+     * @param  string  $accountHolderName  Tên chủ tài khoản
+     * @param  string  $accountNumber  Số tài khoản
+     * @param  string  $phoneNumber  Số điện thoại
+     * @param  string|null  $label  Tên gợi nhớ
+     * @return array{code: 2011, message: string, id: string|int, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
      */
     public function createAcbBankAccount(
         string $companyId,
@@ -872,7 +861,7 @@ final class SePayBankhubService
 
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/acb/individual/bankAccount/create', $payload);
+                ->post('/acb/individual/bankAccount/create', $payload);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to create ACB bank account', [
@@ -885,19 +874,50 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while creating ACB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'account_number' => $accountNumber,
             ]);
 
             return null;
         }
+    }
+
+    /**
+     * Truy vấn tên chủ tài khoản ngân hàng dựa trên bank code
+     *
+     * @param  string  $bankCode  Mã ngân hàng (ACB, MB, OCB, KLB)
+     * @param  string  $accountNumber  Số tài khoản ngân hàng
+     * @return array{account_holder_name: string}|null
+     */
+    public function lookupAccountHolderName(string $bankCode, string $accountNumber): ?array
+    {
+        // Validate input
+        if (empty($bankCode)) {
+            Log::error('SePayBankhubService: Bank code is required for lookup account holder name');
+
+            return null;
+        }
+
+        if (empty($accountNumber)) {
+            Log::error('SePayBankhubService: Account number is required for lookup account holder name');
+
+            return null;
+        }
+
+        // Normalize bank code: trim và uppercase
+        $normalizedBankCode = mb_strtoupper(mb_trim($bankCode));
+
+        // Gọi function lookup tương ứng dựa trên bank code
+        return match ($normalizedBankCode) {
+            'MB' => $this->lookupMbAccountHolderName($accountNumber),
+            'OCB' => $this->lookupOcbAccountHolderName($accountNumber),
+            'KLB' => $this->lookupKlbAccountHolderName($accountNumber),
+            default => $this->handleUnsupportedBankCode($normalizedBankCode, $accountNumber),
+        };
     }
 
     /**
@@ -918,7 +938,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/acb/individual/bankAccount/lookUpAccountHolderName', [
+                ->post('/acb/individual/bankAccount/lookUpAccountHolderName', [
                     'account_number' => $accountNumber,
                 ]);
 
@@ -936,7 +956,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while looking up ACB account holder name', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'account_number' => $accountNumber,
             ]);
 
@@ -949,7 +968,7 @@ final class SePayBankhubService
      *
      * @param  string  $requestId  REQUEST_ID từ API tạo tài khoản
      * @param  string  $otp  Mã OTP
-     * @return array<string, mixed>|null
+     * @return array{code: int, message: string}|null
      */
     public function confirmAcbApiConnection(string $requestId, string $otp): ?array
     {
@@ -965,7 +984,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withHeader('Request-Id', $requestId)
-                ->post('/merchant/v1/acb/individual/bankAccount/confirmApiConnection', [
+                ->post('/acb/individual/bankAccount/confirmApiConnection', [
                     'otp' => $otp,
                 ]);
 
@@ -979,13 +998,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while confirming ACB API connection', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'request_id' => $requestId,
             ]);
 
@@ -1011,7 +1027,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/acb/individual/bankAccount/requestApiConnection/{$bankAccountId}");
+                ->post("/acb/individual/bankAccount/requestApiConnection/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to request ACB API connection', [
@@ -1027,7 +1043,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while requesting ACB API connection', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1053,7 +1068,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/acb/individual/bankAccount/requestDelete/{$bankAccountId}");
+                ->post("/acb/individual/bankAccount/requestDelete/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to request ACB delete', [
@@ -1069,7 +1084,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while requesting ACB delete', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1082,7 +1096,7 @@ final class SePayBankhubService
      *
      * @param  string  $requestId  REQUEST_ID từ API yêu cầu xóa
      * @param  string  $otp  Mã OTP
-     * @return array<string, mixed>|null
+     * @return array{code: int, message: string}|null
      */
     public function confirmAcbDelete(string $requestId, string $otp): ?array
     {
@@ -1098,7 +1112,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withHeader('Request-Id', $requestId)
-                ->post('/merchant/v1/acb/individual/bankAccount/confirmDelete', [
+                ->post('/acb/individual/bankAccount/confirmDelete', [
                     'otp' => $otp,
                 ]);
 
@@ -1112,13 +1126,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while confirming ACB delete', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'request_id' => $requestId,
             ]);
 
@@ -1129,7 +1140,8 @@ final class SePayBankhubService
     /**
      * Xóa tài khoản chưa liên kết API trước đó ngân hàng ACB
      *
-     * @return array<string, mixed>|null
+     * @param  string  $bankAccountId  ID tài khoản ngân hàng
+     * @return array{code: int, message: string}|null
      */
     public function forceDeleteAcbBankAccount(string $bankAccountId): ?array
     {
@@ -1144,7 +1156,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/acb/individual/bankAccount/forceDelete/{$bankAccountId}");
+                ->post("/acb/individual/bankAccount/forceDelete/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to force delete ACB bank account', [
@@ -1156,13 +1168,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while force deleting ACB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1173,10 +1182,16 @@ final class SePayBankhubService
     /**
      * Thêm tài khoản liên kết ngân hàng MB dành cho cá nhân
      *
-     * @return array<string, mixed>|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
+     * @param  string|int  $companyId  ID công ty
+     * @param  string  $accountHolderName  Tên chủ tài khoản
+     * @param  string  $accountNumber  Số tài khoản
+     * @param  string  $identificationNumber  Số CMND/CCCD
+     * @param  string  $phoneNumber  Số điện thoại
+     * @param  string|null  $label  Tên gợi nhớ
+     * @return array{code: 2011, message: string, id: string, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
      */
     public function createMbBankAccount(
-        string $companyId,
+        string|int $companyId,
         string $accountHolderName,
         string $accountNumber,
         string $identificationNumber,
@@ -1206,7 +1221,7 @@ final class SePayBankhubService
 
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/mb/individual/bankAccount/create', $payload);
+                ->post('/mb/individual/bankAccount/create', $payload);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to create MB bank account', [
@@ -1219,13 +1234,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while creating MB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'account_number' => $accountNumber,
             ]);
@@ -1252,7 +1264,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/mb/individual/bankAccount/lookUpAccountHolderName', [
+                ->post('/mb/individual/bankAccount/lookUpAccountHolderName', [
                     'account_number' => $accountNumber,
                 ]);
 
@@ -1270,7 +1282,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while looking up MB account holder name', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'account_number' => $accountNumber,
             ]);
 
@@ -1283,7 +1294,7 @@ final class SePayBankhubService
      *
      * @param  string  $requestId  REQUEST_ID từ API tạo tài khoản
      * @param  string  $otp  Mã OTP 8 chữ số
-     * @return array<string, mixed>|null
+     * @return array{code: int, message: string}|null
      */
     public function confirmMbApiConnection(string $requestId, string $otp): ?array
     {
@@ -1299,7 +1310,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withHeader('Request-Id', $requestId)
-                ->post('/merchant/v1/mb/individual/bankAccount/confirmApiConnection', [
+                ->post('/mb/individual/bankAccount/confirmApiConnection', [
                     'otp' => $otp,
                 ]);
 
@@ -1313,13 +1324,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while confirming MB API connection', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'request_id' => $requestId,
             ]);
 
@@ -1345,7 +1353,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/mb/individual/bankAccount/requestApiConnection/{$bankAccountId}");
+                ->post("/mb/individual/bankAccount/requestApiConnection/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to request MB API connection', [
@@ -1361,7 +1369,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while requesting MB API connection', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1387,7 +1394,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/mb/individual/bankAccount/requestDelete/{$bankAccountId}");
+                ->post("/mb/individual/bankAccount/requestDelete/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to request MB delete', [
@@ -1403,7 +1410,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while requesting MB delete', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1416,7 +1422,7 @@ final class SePayBankhubService
      *
      * @param  string  $requestId  REQUEST_ID từ API yêu cầu xóa
      * @param  string  $otp  Mã OTP 8 chữ số
-     * @return array<string, mixed>|null
+     * @return array{code: int, message: string}|null
      */
     public function confirmMbDelete(string $requestId, string $otp): ?array
     {
@@ -1432,7 +1438,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withHeader('Request-Id', $requestId)
-                ->post('/merchant/v1/mb/individual/bankAccount/confirmDelete', [
+                ->post('/mb/individual/bankAccount/confirmDelete', [
                     'otp' => $otp,
                 ]);
 
@@ -1446,13 +1452,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while confirming MB delete', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'request_id' => $requestId,
             ]);
 
@@ -1463,7 +1466,8 @@ final class SePayBankhubService
     /**
      * Xóa tài khoản chưa liên kết API trước đó ngân hàng MB
      *
-     * @return array<string, mixed>|null
+     * @param  string  $bankAccountId  ID tài khoản ngân hàng
+     * @return array{code: int, message: string}|null
      */
     public function forceDeleteMbBankAccount(string $bankAccountId): ?array
     {
@@ -1478,7 +1482,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/mb/individual/bankAccount/forceDelete/{$bankAccountId}");
+                ->post("/mb/individual/bankAccount/forceDelete/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to force delete MB bank account', [
@@ -1490,13 +1494,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while force deleting MB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1522,7 +1523,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/ocb/individual/bankAccount/lookUpAccountHolderName', [
+                ->post('/ocb/individual/bankAccount/lookUpAccountHolderName', [
                     'account_number' => $accountNumber,
                 ]);
 
@@ -1540,7 +1541,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while looking up OCB account holder name', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'account_number' => $accountNumber,
             ]);
 
@@ -1551,7 +1551,14 @@ final class SePayBankhubService
     /**
      * Yêu cầu tạo VA cho tài khoản liên kết ngân hàng OCB. Hệ thống sẽ gửi OTP
      *
-     * @return array{request_id: string}|null
+     * @param  string  $bankAccountId  ID tài khoản ngân hàng
+     * @param  string  $companyId  ID công ty
+     * @param  string  $merchantName  Tên điểm bán
+     * @param  string  $email  Email
+     * @param  string  $merchantAddress  Địa chỉ điểm bán
+     * @param  string  $va  Số VA
+     * @param  string|null  $label  Tên gợi nhớ
+     * @return array{code: int, message: string, data: array{request_id: string}}|null
      */
     public function requestOcbVaCreate(
         string $bankAccountId,
@@ -1586,7 +1593,7 @@ final class SePayBankhubService
 
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/ocb/individual/VA/requestCreate', $payload);
+                ->post('/ocb/individual/VA/requestCreate', $payload);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to request OCB VA create', [
@@ -1603,7 +1610,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while requesting OCB VA create', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
                 'company_id' => $companyId,
             ]);
@@ -1617,7 +1623,7 @@ final class SePayBankhubService
      *
      * @param  string  $requestId  REQUEST_ID từ API yêu cầu tạo VA
      * @param  string  $otp  Mã OTP 6 chữ số
-     * @return array{id: string}|null
+     * @return array{code: int, message: string, id: string}|null
      */
     public function confirmOcbVaCreate(string $requestId, string $otp): ?array
     {
@@ -1633,7 +1639,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withHeader('Request-Id', $requestId)
-                ->post('/merchant/v1/ocb/individual/VA/confirmCreate', [
+                ->post('/ocb/individual/VA/confirmCreate', [
                     'otp' => $otp,
                 ]);
 
@@ -1647,13 +1653,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while confirming OCB VA create', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'request_id' => $requestId,
             ]);
 
@@ -1706,7 +1709,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withQueryParameters($params)
-                ->get('/merchant/v1/ocb/individual/VA');
+                ->get('/ocb/individual/VA');
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to list OCB VAs', [
@@ -1718,13 +1721,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while listing OCB VAs', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;
@@ -1749,7 +1749,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->get("/merchant/v1/ocb/individual/VA/details/{$vaId}");
+                ->get("/ocb/individual/VA/details/{$vaId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get OCB VA details', [
@@ -1765,7 +1765,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting OCB VA details', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'va_id' => $vaId,
             ]);
 
@@ -1776,7 +1775,10 @@ final class SePayBankhubService
     /**
      * Cập nhật thông tin tài khoản ngân hàng OCB dành cho cá nhân
      *
-     * @return array<string, mixed>|null
+     * @param  string  $bankAccountId  ID tài khoản ngân hàng
+     * @param  string|null  $identificationNumber  Số CMND/CCCD
+     * @param  string|null  $phoneNumber  Số điện thoại
+     * @return array{code: int, message: string}|null
      */
     public function editOcbBankAccount(
         string $bankAccountId,
@@ -1804,7 +1806,7 @@ final class SePayBankhubService
 
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/ocb/individual/bankAccount/edit/{$bankAccountId}", $payload);
+                ->post("/ocb/individual/bankAccount/edit/{$bankAccountId}", $payload);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to edit OCB bank account', [
@@ -1816,13 +1818,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while editing OCB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1833,7 +1832,8 @@ final class SePayBankhubService
     /**
      * Xóa tài khoản chưa liên kết API trước đó ngân hàng OCB
      *
-     * @return array<string, mixed>|null
+     * @param  string  $bankAccountId  ID tài khoản ngân hàng
+     * @return array{code: int, message: string}|null
      */
     public function forceDeleteOcbBankAccount(string $bankAccountId): ?array
     {
@@ -1848,7 +1848,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/ocb/individual/bankAccount/forceDelete/{$bankAccountId}");
+                ->post("/ocb/individual/bankAccount/forceDelete/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to force delete OCB bank account', [
@@ -1860,13 +1860,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while force deleting OCB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -1892,7 +1889,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/klb/bankAccount/lookUpAccountHolderName', [
+                ->post('/klb/bankAccount/lookUpAccountHolderName', [
                     'account_number' => $accountNumber,
                 ]);
 
@@ -1910,7 +1907,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while looking up KLB account holder name', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'account_number' => $accountNumber,
             ]);
 
@@ -1924,7 +1920,7 @@ final class SePayBankhubService
      * @param  string  $bankAccountId  ID tài khoản ngân hàng
      * @param  string  $companyId  ID công ty
      * @param  string|null  $label  Tên gợi nhớ
-     * @return array{id: string}|null
+     * @return array{code: int, message: string, id: string}|null
      */
     public function createKlbVa(
         string $bankAccountId,
@@ -1951,7 +1947,7 @@ final class SePayBankhubService
 
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/klb/VA/create', $payload);
+                ->post('/klb/VA/create', $payload);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to create KLB VA', [
@@ -1964,13 +1960,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while creating KLB VA', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
                 'company_id' => $companyId,
             ]);
@@ -1982,7 +1975,10 @@ final class SePayBankhubService
     /**
      * Thêm tài khoản liên kết ngân hàng KienLongBank dành cho cá nhân/doanh nghiệp
      *
-     * @return array<string, mixed>|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
+     * @param  string  $companyId  ID công ty
+     * @param  string  $accountNumber  Số tài khoản
+     * @param  string|null  $label  Tên gợi nhớ
+     * @return array{code: 2011, message: string, id: string, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
      */
     public function createKlbBankAccount(
         string $companyId,
@@ -2009,7 +2005,7 @@ final class SePayBankhubService
 
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post('/merchant/v1/klb/bankAccount/create', $payload);
+                ->post('/klb/bankAccount/create', $payload);
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to create KLB bank account', [
@@ -2022,13 +2018,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while creating KLB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'company_id' => $companyId,
                 'account_number' => $accountNumber,
             ]);
@@ -2042,7 +2035,7 @@ final class SePayBankhubService
      *
      * @param  string  $requestId  REQUEST_ID từ API tạo tài khoản
      * @param  string  $otp  Mã OTP 6 chữ số
-     * @return array<string, mixed>|null
+     * @return array{code: int, message: string}|null
      */
     public function confirmKlbApiConnection(string $requestId, string $otp): ?array
     {
@@ -2058,7 +2051,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withHeader('Request-Id', $requestId)
-                ->post('/merchant/v1/klb/bankAccount/confirmApiConnection', [
+                ->post('/klb/bankAccount/confirmApiConnection', [
                     'otp' => $otp,
                 ]);
 
@@ -2072,13 +2065,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while confirming KLB API connection', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'request_id' => $requestId,
             ]);
 
@@ -2104,7 +2094,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/klb/bankAccount/requestApiConnection/{$bankAccountId}");
+                ->post("/klb/bankAccount/requestApiConnection/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to request KLB API connection', [
@@ -2120,7 +2110,6 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while requesting KLB API connection', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -2131,7 +2120,8 @@ final class SePayBankhubService
     /**
      * Xóa tài khoản chưa liên kết API trước đó ngân hàng KienLongBank
      *
-     * @return array<string, mixed>|null
+     * @param  string  $bankAccountId  ID tài khoản ngân hàng
+     * @return array{code: int, message: string}|null
      */
     public function forceDeleteKlbBankAccount(string $bankAccountId): ?array
     {
@@ -2146,7 +2136,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/klb/bankAccount/forceDelete/{$bankAccountId}");
+                ->post("/klb/bankAccount/forceDelete/{$bankAccountId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to force delete KLB bank account', [
@@ -2158,13 +2148,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while force deleting KLB bank account', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'bank_account_id' => $bankAccountId,
             ]);
 
@@ -2175,7 +2162,8 @@ final class SePayBankhubService
     /**
      * Kích hoạt lại VA cho tài khoản liên kết ngân hàng KienLongBank
      *
-     * @return array<string, mixed>|null
+     * @param  string  $vaId  ID VA
+     * @return array{code: int, message: string}|null
      */
     public function enableKlbVa(string $vaId): ?array
     {
@@ -2190,7 +2178,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/klb/VA/enable/{$vaId}");
+                ->post("/klb/VA/enable/{$vaId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to enable KLB VA', [
@@ -2202,13 +2190,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while enabling KLB VA', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'va_id' => $vaId,
             ]);
 
@@ -2219,7 +2204,8 @@ final class SePayBankhubService
     /**
      * Vô hiệu hóa VA cho tài khoản liên kết ngân hàng KienLongBank
      *
-     * @return array<string, mixed>|null
+     * @param  string  $vaId  ID VA
+     * @return array{code: int, message: string}|null
      */
     public function disableKlbVa(string $vaId): ?array
     {
@@ -2234,7 +2220,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->post("/merchant/v1/klb/VA/disable/{$vaId}");
+                ->post("/klb/VA/disable/{$vaId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to disable KLB VA', [
@@ -2246,13 +2232,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while disabling KLB VA', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'va_id' => $vaId,
             ]);
 
@@ -2305,7 +2288,7 @@ final class SePayBankhubService
             $response = $this->httpClient()
                 ->withToken($accessToken)
                 ->withQueryParameters($params)
-                ->get('/merchant/v1/klb/VA');
+                ->get('/klb/VA');
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to list KLB VAs', [
@@ -2317,13 +2300,10 @@ final class SePayBankhubService
                 $response->throw();
             }
 
-            $result = $response->json();
-
-            return $result;
+            return $response->json();
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while listing KLB VAs', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;
@@ -2348,7 +2328,7 @@ final class SePayBankhubService
         try {
             $response = $this->httpClient()
                 ->withToken($accessToken)
-                ->get("/merchant/v1/klb/VA/details/{$vaId}");
+                ->get("/klb/VA/details/{$vaId}");
 
             if (! $response->successful()) {
                 Log::error('SePayBankhubService: Failed to get KLB VA details', [
@@ -2364,12 +2344,45 @@ final class SePayBankhubService
         } catch (Exception $e) {
             Log::error('SePayBankhubService: Exception while getting KLB VA details', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'va_id' => $vaId,
             ]);
 
             return null;
         }
+    }
+
+    /**
+     * Xác định xem bank code có thể lấy được AccountHolderName hay không
+     *
+     * @param  string  $bankCode  Mã ngân hàng
+     * @return bool Trả về true nếu bank code hỗ trợ lookup AccountHolderName, false nếu không
+     */
+    public function canLookupAccountHolderName(string $bankCode): bool
+    {
+        // Normalize bank code: trim và uppercase
+        $normalizedBankCode = mb_strtoupper(mb_trim($bankCode));
+
+        // Danh sách các bank code hỗ trợ lookup AccountHolderName
+        $supportedBankCodes = ['MB', 'OCB', 'KLB'];
+
+        return in_array($normalizedBankCode, $supportedBankCodes, true);
+    }
+
+    /**
+     * Xử lý khi bank code không được hỗ trợ
+     *
+     * @param  string  $bankCode  Mã ngân hàng
+     * @param  string  $accountNumber  Số tài khoản
+     */
+    private function handleUnsupportedBankCode(string $bankCode, string $accountNumber): null
+    {
+        Log::warning('SePayBankhubService: Unsupported bank code for lookup account holder name', [
+            'bank_code' => $bankCode,
+            'account_number' => $accountNumber,
+            'supported_banks' => ['ACB', 'MB', 'OCB', 'KLB'],
+        ]);
+
+        return null;
     }
 
     /**
