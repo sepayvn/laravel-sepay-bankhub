@@ -69,7 +69,17 @@ final class SePayBankhubService
     /**
      * Lấy danh sách bank từ API (có cache)
      *
-     * @return array<int, array{id: string, brand_name: string, full_name: string, short_name: string, code: string, bin: string, logo_path: string, icon: string, active: string}>
+     * @return array<int, array{
+     *     id: string,
+     *     brand_name: string,
+     *     full_name: string,
+     *     short_name: string,
+     *     code: string,
+     *     bin: string,
+     *     logo_path: string,
+     *     icon: string,
+     *     active: string
+     * }>
      */
     public function getBanks(): array
     {
@@ -224,7 +234,20 @@ final class SePayBankhubService
      * Truy vấn bộ đếm giao dịch của Merchant
      *
      * @param  string|null  $date  Ngày lọc theo định dạng Y-m-d
-     * @return array{dates: array<int, array{company_id: string, date: string, transaction: string, transaction_in: string, transaction_out: string}>, total: array{transaction: int, transaction_in: int, transaction_out: int}}|null
+     * @return array{
+     *     dates: array<int, array{
+     *         company_id: string,
+     *         date: string,
+     *         transaction: string,
+     *         transaction_in: string,
+     *         transaction_out: string
+     *     }>,
+     *     total: array{
+     *         transaction: int,
+     *         transaction_in: int,
+     *         transaction_out: int
+     *     }
+     * }|null
      */
     public function getMerchantCounter(?string $date = null): ?array
     {
@@ -273,7 +296,23 @@ final class SePayBankhubService
      * @param  string|null  $query  Từ khóa tìm kiếm
      * @param  string|null  $status  Lọc theo trạng thái (Pending, Active, Suspended, Terminated, Cancelled, Fraud)
      * @param  string|null  $sortCreatedAt  Sắp xếp theo ngày tạo (asc, desc)
-     * @return array{data: array<int, array{id: string, full_name: string, short_name: string, status: string, created_at: string, updated_at: string}>, meta: array{per_page: int, total: int, has_more: bool, current_page: int, page_count: int}}|null
+     * @return array{
+     *     data: array<int, array{
+     *         id: string,
+     *         full_name: string,
+     *         short_name: string,
+     *         status: string,
+     *         created_at: string,
+     *         updated_at: string
+     *     }>,
+     *     meta: array{
+     *         per_page: int,
+     *         total: int,
+     *         has_more: bool,
+     *         current_page: int,
+     *         page_count: int
+     *     }
+     * }|null
      */
     public function listCompanies(
         ?int $perPage = null,
@@ -336,7 +375,14 @@ final class SePayBankhubService
     /**
      * Truy vấn chi tiết công ty (tổ chức)
      *
-     * @return array{id: string, full_name: string, short_name: string, status: string, created_at: string, updated_at: string}|null
+     * @return array{
+     *     id: string,
+     *     full_name: string,
+     *     short_name: string,
+     *     status: string,
+     *     created_at: string,
+     *     updated_at: string
+     * }|null
      */
     public function getCompanyDetails(string $companyId): ?array
     {
@@ -377,7 +423,14 @@ final class SePayBankhubService
     /**
      * Truy vấn cấu hình công ty (tổ chức)
      *
-     * @return array{payment_code: string, payment_code_prefix: string, payment_code_suffix_from: int, payment_code_suffix_to: int, payment_code_suffix_character_type: string, transaction_amount: int|string}|null
+     * @return array{
+     *     payment_code: string,
+     *     payment_code_prefix: string,
+     *     payment_code_suffix_from: int,
+     *     payment_code_suffix_to: int,
+     *     payment_code_suffix_character_type: string,
+     *     transaction_amount: int|string
+     * }|null
      */
     public function getCompanyConfiguration(string $companyId): ?array
     {
@@ -419,7 +472,14 @@ final class SePayBankhubService
      * Cập nhật cấu hình công ty (tổ chức)
      *
      * @param  string|int  $companyId  ID công ty
-     * @param  array{payment_code?: string, payment_code_prefix?: string, payment_code_suffix_from?: int, payment_code_suffix_to?: int, payment_code_suffix_character_type?: string, transaction_amount?: int|string}  $config  Cấu hình cần cập nhật
+     * @param  array{
+     *     payment_code?: string,
+     *     payment_code_prefix?: string,
+     *     payment_code_suffix_from?: int,
+     *     payment_code_suffix_to?: int,
+     *     payment_code_suffix_character_type?: string,
+     *     transaction_amount?: int|string
+     * }  $config  Cấu hình cần cập nhật
      * @return array{code: int, message: string}|null
      */
     public function updateCompanyConfiguration(string|int $companyId, array $config): ?array
@@ -464,7 +524,20 @@ final class SePayBankhubService
      * Truy vấn bộ đếm công ty (tổ chức)
      *
      * @param  string|null  $date  Ngày lọc theo định dạng Y-m-d
-     * @return array{dates: array<int, array{company_id: string, date: string, transaction: string, transaction_in: string, transaction_out: string}>, total: array{transaction: int, transaction_in: int, transaction_out: int}}|null
+     * @return array{
+     *     dates: array<int, array{
+     *         company_id: string,
+     *         date: string,
+     *         transaction: string,
+     *         transaction_in: string,
+     *         transaction_out: string
+     *     }>,
+     *     total: array{
+     *         transaction: int,
+     *         transaction_in: int,
+     *         transaction_out: int
+     *     }
+     * }|null
      */
     public function getCompanyCounter(string $companyId, ?string $date = null): ?array
     {
@@ -515,7 +588,29 @@ final class SePayBankhubService
      * @param  string|null  $query  Từ khóa tìm kiếm
      * @param  string|null  $companyId  Lọc theo ID công ty
      * @param  string|null  $bankId  Lọc theo ID ngân hàng
-     * @return array{data: array<int, array{id: string, company_id: string, bank_id: string, account_holder_name: string, account_number: string, accumulated: string, label: string, bank_api_connected: string, last_transaction: string|null, created_at: string, updated_at: string}>, meta: array{per_page: int, total: int, has_more: bool, current_page: int, page_count: int}}|null
+     * @return array{
+     *     data: array<int, array{
+     *         id: string,
+     *         company_id: string,
+     *         bank_id: string,
+     *         account_holder_name: string,
+     *         account_number: string,
+     *         accumulated: string,
+     *         label: string,
+     *         bank_api_connected: string,
+     *         active: string,
+     *         last_transaction: string|null,
+     *         created_at: string,
+     *         updated_at: string
+     *     }>,
+     *     meta: array{
+     *         per_page: int,
+     *         total: int,
+     *         has_more: bool,
+     *         current_page: int,
+     *         page_count: int
+     *     }
+     * }|null
      */
     public function listBankAccounts(
         ?int $perPage = null,
@@ -578,7 +673,19 @@ final class SePayBankhubService
     /**
      * Truy vấn chi tiết tài khoản ngân hàng
      *
-     * @return array{id: string, company_id: string, bank_id: string, account_holder_name: string, account_number: string, accumulated: string, label: string, bank_api_connected: string, last_transaction: string|null, created_at: string, updated_at: string}|null
+     * @return array{
+     *     id: string,
+     *     company_id: string,
+     *     bank_id: string,
+     *     account_holder_name: string,
+     *     account_number: string,
+     *     accumulated: string,
+     *     label: string,
+     *     bank_api_connected: string,
+     *     last_transaction: string|null,
+     *     created_at: string,
+     *     updated_at: string
+     * }|null
      */
     public function getBankAccountDetails(string $bankAccountId): ?array
     {
@@ -629,7 +736,31 @@ final class SePayBankhubService
      * @param  string|null  $endTransactionDate  Lọc theo ngày kết thúc (Y-m-d hoặc Y-m-d H:i:s)
      * @param  string|null  $transferType  Lọc theo loại giao dịch (credit, debit)
      * @param  string|null  $vaId  Lọc theo ID VA
-     * @return array{data: array<int, array{id: string, transaction_id: string, transaction_date: string, bank_account_id: string, account_number: string, company_id: string, bank_id: string, va_id: string|null, va: string|null, reference_number: string|null, transaction_content: string, payment_code: string|null, transfer_type: string, amount: string}>, meta: array{per_page: int, total: int, has_more: bool, current_page: int, page_count: int}}|null
+     * @return array{
+     *     data: array<int, array{
+     *         id: string,
+     *         transaction_id: string,
+     *         transaction_date: string,
+     *         bank_account_id: string,
+     *         account_number: string,
+     *         company_id: string,
+     *         bank_id: string,
+     *         va_id: string|null,
+     *         va: string|null,
+     *         reference_number: string|null,
+     *         transaction_content: string,
+     *         payment_code: string|null,
+     *         transfer_type: string,
+     *         amount: string
+     *     }>,
+     *     meta: array{
+     *         per_page: int,
+     *         total: int,
+     *         has_more: bool,
+     *         current_page: int,
+     *         page_count: int
+     *     }
+     * }|null
      */
     public function listTransactions(
         ?int $perPage = null,
@@ -722,7 +853,22 @@ final class SePayBankhubService
     /**
      * Truy vấn chi tiết lịch sử giao dịch
      *
-     * @return array{id: string, transaction_id: string, transaction_date: string, bank_account_id: string, account_number: string, company_id: string, bank_id: string, va_id: string|null, va: string|null, reference_number: string|null, transaction_content: string, payment_code: string|null, transfer_type: string, amount: string}|null
+     * @return array{
+     *     id: string,
+     *     transaction_id: string,
+     *     transaction_date: string,
+     *     bank_account_id: string,
+     *     account_number: string,
+     *     company_id: string,
+     *     bank_id: string,
+     *     va_id: string|null,
+     *     va: string|null,
+     *     reference_number: string|null,
+     *     transaction_content: string,
+     *     payment_code: string|null,
+     *     transfer_type: string,
+     *     amount: string
+     * }|null
      */
     public function getTransactionDetails(string $transactionId): ?array
     {
@@ -769,7 +915,16 @@ final class SePayBankhubService
      * @param  string  $identificationNumber  Số CMND/CCCD
      * @param  string  $phoneNumber  Số điện thoại
      * @param  string  $label  Tên gợi nhớ
-     * @return array{code: 2011, message: string, id: string, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về dữ liệu tài khoản đã tạo hoặc null nếu thất bại
+     * @return array{
+     *     code: 2011,
+     *     message: string,
+     *     id: string,
+     *     data: array{request_id: string}
+     * }|array{
+     *     code: 2012,
+     *     message: string,
+     *     id: string
+     * }|null Trả về dữ liệu tài khoản đã tạo hoặc null nếu thất bại
      */
     public function createOcbIndividualBankAccount(
         string $companyId,
@@ -830,7 +985,18 @@ final class SePayBankhubService
      * @param  string  $accountNumber  Số tài khoản
      * @param  string  $phoneNumber  Số điện thoại
      * @param  string|null  $label  Tên gợi nhớ
-     * @return array{code: 2011, message: string, id: string|int, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
+     * @return array{
+     *     code: 2011,
+     *     message: string,
+     *     id: string|int,
+     *     data: array{request_id: string}
+     * }
+     * | array{
+     *     code: 2012,
+     *     message: string,
+     *     id: string
+     * }
+     * | null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
      */
     public function createAcbBankAccount(
         string $companyId,
@@ -1188,7 +1354,16 @@ final class SePayBankhubService
      * @param  string  $identificationNumber  Số CMND/CCCD
      * @param  string  $phoneNumber  Số điện thoại
      * @param  string|null  $label  Tên gợi nhớ
-     * @return array{code: 2011, message: string, id: string, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
+     * @return array{
+     *     code: 2011,
+     *     message: string,
+     *     id: string,
+     *     data: array{request_id: string}
+     * }|array{
+     *     code: 2012,
+     *     message: string,
+     *     id: string
+     * }|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
      */
     public function createMbBankAccount(
         string|int $companyId,
@@ -1671,7 +1846,25 @@ final class SePayBankhubService
      * @param  string|null  $query  Từ khóa tìm kiếm
      * @param  string|null  $companyId  Lọc theo ID công ty
      * @param  string|null  $bankAccountId  Lọc theo ID tài khoản ngân hàng
-     * @return array{data: array<int, array{id: string, company_id: string, bank_account_id: string, va: string, label: string, active: string, created_at: string, updated_at: string}>, meta: array{per_page: int, total: int, has_more: bool, current_page: int, page_count: int}}|null
+     * @return array{
+     *     data: array<int, array{
+     *         id: string,
+     *         company_id: string,
+     *         bank_account_id: string,
+     *         va: string,
+     *         label: string,
+     *         active: string,
+     *         created_at: string,
+     *         updated_at: string
+     *     }>,
+     *     meta: array{
+     *         per_page: int,
+     *         total: int,
+     *         has_more: bool,
+     *         current_page: int,
+     *         page_count: int
+     *     }
+     * }|null
      */
     public function listOcbVas(
         ?int $perPage = null,
@@ -1734,7 +1927,16 @@ final class SePayBankhubService
     /**
      * Truy vấn chi tiết VA thuộc tài khoản ngân hàng OCB
      *
-     * @return array{id: string, company_id: string, bank_account_id: string, va: string, label: string, active: string, created_at: string, updated_at: string}|null
+     * @return array{
+     *     id: string,
+     *     company_id: string,
+     *     bank_account_id: string,
+     *     va: string,
+     *     label: string,
+     *     active: string,
+     *     created_at: string,
+     *     updated_at: string
+     * }|null
      */
     public function getOcbVaDetails(string $vaId): ?array
     {
@@ -1978,7 +2180,16 @@ final class SePayBankhubService
      * @param  string  $companyId  ID công ty
      * @param  string  $accountNumber  Số tài khoản
      * @param  string|null  $label  Tên gợi nhớ
-     * @return array{code: 2011, message: string, id: string, data: array{request_id: string}}|array{code: 2012, message: string, id: string}|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
+     * @return array{
+     *     code: 2011,
+     *     message: string,
+     *     id: string,
+     *     data: array{request_id: string}
+     * }|array{
+     *     code: 2012,
+     *     message: string,
+     *     id: string
+     * }|null Trả về response với code 2011 (cần OTP) hoặc 2012 (đã liên kết thành công)
      */
     public function createKlbBankAccount(
         string $companyId,
@@ -2250,7 +2461,25 @@ final class SePayBankhubService
      * @param  string|null  $query  Từ khóa tìm kiếm
      * @param  string|null  $companyId  Lọc theo ID công ty
      * @param  string|null  $bankAccountId  Lọc theo ID tài khoản ngân hàng
-     * @return array{data: array<int, array{id: string, company_id: string, bank_account_id: string, va: string, label: string, active: string, created_at: string, updated_at: string}>, meta: array{per_page: int, total: int, has_more: bool, current_page: int, page_count: int}}|null
+     * @return array{
+     *     data: array<int, array{
+     *         id: string,
+     *         company_id: string,
+     *         bank_account_id: string,
+     *         va: string,
+     *         label: string,
+     *         active: string,
+     *         created_at: string,
+     *         updated_at: string
+     *     }>,
+     *     meta: array{
+     *         per_page: int,
+     *         total: int,
+     *         has_more: bool,
+     *         current_page: int,
+     *         page_count: int
+     *     }
+     * }|null
      */
     public function listKlbVas(
         ?int $perPage = null,
@@ -2313,7 +2542,16 @@ final class SePayBankhubService
     /**
      * Truy vấn chi tiết VA thuộc tài khoản ngân hàng KienLongBank
      *
-     * @return array{id: string, company_id: string, bank_account_id: string, va: string, label: string, active: string, created_at: string, updated_at: string}|null
+     * @return array{
+     *     id: string,
+     *     company_id: string,
+     *     bank_account_id: string,
+     *     va: string,
+     *     label: string,
+     *     active: string,
+     *     created_at: string,
+     *     updated_at: string
+     * }|null
      */
     public function getKlbVaDetails(string $vaId): ?array
     {
